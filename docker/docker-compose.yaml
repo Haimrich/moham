@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  moham:
+    image: moham:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspaces/moham:cached
+    entrypoint: []
+    command: sleep infinity
+    tty: true
+    #stdin_open: true

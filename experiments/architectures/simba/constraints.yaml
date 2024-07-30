@@ -1,0 +1,77 @@
+
+constraints:
+  - layer-types:
+    - conv
+    - dense
+    - transposed-conv
+    - matmul
+    targets:
+      # ARCHITECTURAL CONSTRAINTS
+      - target: PEWeightRegs
+        type: datatype 
+        keep:
+        - Weights
+        bypass:
+        - Inputs 
+        - Outputs
+      - target: PEAccuBuffer
+        type: datatype
+        keep:
+        - Outputs
+        bypass:
+        - Weights
+        - Inputs
+      - target: PEWeightBuffer
+        type: datatype
+        keep:
+        - Weights
+        bypass:
+        - Inputs
+        - Outputs
+      - target: PEInputBuffer
+        type: datatype
+        keep:
+        - Inputs
+        bypass:
+        - Weights
+        - Outputs
+      - target: GlobalBuffer
+        type: datatype
+        keep:
+        - Inputs
+        - Outputs
+        bypass:
+        - Weights
+      - target: PEAccuBuffer
+        type: spatial
+        factors: P=1 Q=1 R=1 S=1 M=1 N=1 C=4
+        permutation: CMQRSPN
+      - target: PEInputBuffer
+        type: spatial
+        factors: P=1 Q=1 R=1 S=1 C=1 N=1 M=4
+        permutation: MCQRSPN
+      - target: GlobalBuffer
+        type: spatial
+        factors: R=1 S=1 P=1 Q=1 N=1
+        permutation: MCRSPQN
+      - target: GlobalBuffer
+        type: temporal
+        factors: R=1 S=1
+        permutation: PQCRSMN
+      - target: PEWeightRegs
+        type: temporal
+        permutation: RSCMN
+        factors: R=1 S=1 C=1 M=1 N=1
+      - target: PEInputBuffer
+        type: temporal
+        factors: P=1 Q=1 R=1 S=1 C=1 M=1 N=1
+        permutation: PQRSCMN
+      - target: PEAccuBuffer
+        type: temporal
+        factors: P=1 Q=1 R=1 S=1 C=1 N=1
+        permutation: PQRSCN
+      - target: PEWeightBuffer
+        type: temporal
+        factors: P=1 Q=1 M=1 N=1
+        permutation: PQMN
+  

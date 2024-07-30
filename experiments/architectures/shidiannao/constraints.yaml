@@ -1,0 +1,91 @@
+
+constraints:
+  - layer-types:
+    - conv
+    - transposed-conv
+    targets:
+      # Output Stationary in NPU
+      - target: SynapsesBuffer
+        type: temporal
+        permutation: CRSPQMN
+        factors: P=1 Q=1
+      # Assign one output neuron to each PE
+      - target: SynapsesBuffer
+        type: spatial
+        factors: N=1 C=1 M=1 R=1 S=1
+        permutation: PQNCMRS
+        split: 1
+      # Buffer Datypes
+      - target: MainMemory
+        type: datatype
+        keep:
+        - Weights
+        - Inputs
+        - Outputs
+        bypass: []
+      - target: NeuronsBuffer
+        type: datatype
+        keep:
+        - Inputs
+        - Outputs
+        bypass: 
+        - Weights
+      - target: SynapsesBuffer
+        type: datatype
+        keep:
+        - Weights
+        bypass: 
+        - Inputs
+        - Outputs
+      - target: RegisterIn
+        type: datatype
+        keep:
+        - Inputs
+        bypass:
+        - Outputs
+        - Weights
+  - layer-types:
+    - matmul
+    - dense
+    targets:
+      # Output Stationary in NPU
+      - target: SynapsesBuffer
+        type: temporal
+        permutation: CRSPQMN
+        factors: P=1 Q=1
+      # Assign one output neuron to each PE
+      - target: SynapsesBuffer
+        type: spatial
+        factors: C=1 R=1 S=1 P=1 Q=1
+        permutation: MNCRSPQ
+        split: 1
+      # Buffer Datypes
+      - target: MainMemory
+        type: datatype
+        keep:
+        - Weights
+        - Inputs
+        - Outputs
+        bypass: []
+      - target: NeuronsBuffer
+        type: datatype
+        keep:
+        - Inputs
+        - Outputs
+        bypass: 
+        - Weights
+      - target: SynapsesBuffer
+        type: datatype
+        keep:
+        - Weights
+        bypass: 
+        - Inputs
+        - Outputs
+      - target: RegisterIn
+        type: datatype
+        keep:
+        - Inputs
+        bypass:
+        - Outputs
+        - Weights
+    

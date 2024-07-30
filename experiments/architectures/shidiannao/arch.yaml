@@ -1,0 +1,75 @@
+# ShiSianNao Architecture
+
+architecture:
+  version: 0.3
+  subtree:
+  - name: System
+    attributes:
+      datawidth: 8
+      word-bits: 8
+      technology: 45nm
+    local:
+    - name: MainMemory
+      class: DRAM
+      attributes:
+        type: LPDDR4
+        width: 64
+        block-size: 8
+        word-bits: 8
+        instances: 1
+        read_bandwidth: 17.9
+        write_bandwidth: 17.9
+    - name: NeuronsBuffer # NBin/NBout
+      class: storage
+      subclass: smartbuffer_SRAM
+      attributes:
+        depth: 4096
+        width: 64
+        word-bits: 8
+        read_bandwidth: 16
+        write_bandwidth: 16
+        block-size: 8
+        entries: 32768
+        instances: 1
+    subtree:
+      - name: NFU
+        local:
+        - name: SynapsesBuffer # SB
+          class: storage
+          subclass: smartbuffer_SRAM
+          attributes:
+            block-size: 8
+            depth: 4096
+            width: 64
+            word-bits: 8
+            read_bandwidth: 16
+            write_bandwidth: 16
+            entries: 32768
+            instances: 1
+            network_read: NoC
+        - name: NoC
+          class: Legacy
+          attributes:
+            word-bits: 8
+            energy-per-hop: 0.952
+        subtree:
+          - name: PE
+            local:
+            - name: RegisterIn
+              class: storage
+              subclass: reg_storage
+              attributes:
+                depth: 16
+                word-bits: 8
+                meshX: 64
+                instances: 4096
+                network_fill: NoC
+            - name: MACC
+              #class: intmac
+              class: compute
+              subclass: intmac
+              attributes:
+                datawidth: 8
+                meshX: 64
+                instances: 4096
+  

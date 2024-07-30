@@ -1,0 +1,96 @@
+# Simba-like Chiplet Architecture
+
+architecture:
+  version: 0.3
+  subtree:
+    - name: System
+      attributes:
+        datawidth: 8
+        word-bits: 8
+        technology: 45nm
+      local:
+        - name: DRAM
+          class: DRAM
+          attributes:
+            type: LPDDR4
+            width: 64
+            block-size: 8
+            word-bits: 8
+            instances: 1
+            read_bandwidth: 17.9
+            write_bandwidth: 17.9
+      subtree:
+        - name: Chiplet
+          local:
+            - name: GlobalBuffer
+              class: storage
+              subclass: smartbuffer_SRAM
+              attributes:
+                depth: 2048
+                width: 256
+                word-bits: 8
+                n_rdwr_ports: 2
+                read_bandwidth: 16
+                write_bandwidth: 16
+                network_read: NoC
+                block-size: 32
+                entries: 65536
+                instances: 1
+            - name: NoC
+              class: Legacy
+              attributes:
+                word-bits: 8
+                energy-per-hop: 0.952
+          subtree:
+            - name: PE
+              local:
+                - name: PEInputBuffer
+                  class: storage
+                  subclass: smartbuffer_RF
+                  attributes:
+                    depth: 1024
+                    width: 64
+                    word-bits: 8
+                    block-size: 8
+                    network_fill: NoC
+                    entries: 8192
+                    meshX: 64
+                    instances: 64
+                - name: PEWeightBuffer
+                  class: storage
+                  subclass: smartbuffer_RF
+                  attributes:
+                    depth: 512
+                    word-bits: 8
+                    block-size: 8
+                    nbanks: 8
+                    entries: 4096
+                    meshX: 64
+                    instances: 1024
+                - name: PEAccuBuffer
+                  class: storage
+                  subclass: smartbuffer_RF
+                  attributes:
+                    depth: 128
+                    word-bits: 24
+                    entries: 128
+                    meshX: 64
+                    instances: 1024
+                - name: PEWeightRegs
+                  class: storage
+                  subclass: reg_storage
+                  attributes:
+                    depth: 1
+                    word-bits: 8
+                    cluster-size: 64
+                    num-ports: 2
+                    meshX: 64
+                    instances: 4096
+                    entries: 1
+                - name: LMAC
+                  class: compute
+                  subclass: intmac
+                  attributes:
+                    datawidth: 8
+                    meshX: 64
+                    instances: 4096

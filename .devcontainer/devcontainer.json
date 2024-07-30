@@ -1,0 +1,6 @@
+{
+	"name": "moham-dev",
+	"dockerComposeFile": "../docker/docker-compose.yaml",
+	"service": "moham",
+	"workspaceFolder": "/workspaces/moham"
+}

@@ -1,0 +1,28 @@
+
+constraints:
+  - layer-types:
+    - conv
+    - dense
+    targets:
+      # ARCHITECTURAL CONSTRAINTS
+      - target: MainMemory
+        type: datatype
+        keep:
+        - Weights
+        - Inputs
+        - Outputs
+        bypass: []
+      - target: GlobalScratchpad
+        type: datatype
+        keep:
+        - Inputs
+        - Weights
+        - Outputs
+        bypass: []
+      - target: LocalScratchpad
+        type: datatype
+        keep:
+        - Inputs
+        - Outputs
+        - Weights
+        bypass: []

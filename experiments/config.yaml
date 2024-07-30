@@ -1,0 +1,142 @@
+# MOTH Configuration File
+--- 
+architecture: 
+  templates: 
+
+    # Simba-like
+
+    simba: 
+      allowed-layers: 
+        - conv
+        - depthwise-conv
+        - separable-conv
+        - dense
+        - matmul
+        - transposed-conv
+      input: ../experiments/architectures/simba
+
+    ## ShiDianNao-like
+    #
+    #shidiannao: 
+    #  allowed-layers: 
+    #    - conv
+    #    - dense
+    #    - matmul
+    #    - transposed-conv
+    #  input: ../experiments/architectures/shidiannao
+    
+    ## Eyeriss-like
+    #
+    #eyeriss: 
+    #  allowed-layers: 
+    #    - conv
+    #    - dense
+    #    - matmul
+    #    - transposed-conv
+    #  input: ../experiments/architectures/eyeriss
+
+    ## MAESTRO-like architecture
+    #
+    #simple: 
+    #  allowed-layers: 
+    #    - conv
+    #    - dense
+    #  input: ../experiments/architectures/simple
+    
+  accelergy-components: ../experiments/components
+  max-subaccelerators: 8
+  system-bandwidth: 16
+  nip-link-bandwidth: 4
+  nip-hop-energy: 0
+  memory-interfaces:
+    position: corner # middle
+    amount: 
+      - [4,2] # 2 MIs with up to 4 subaccs
+    max-amount: 4
+
+workloads: 
+
+    ## Mobile Workload
+    #
+    #- onnx: ../experiments/workloads/mobilenetv3.onnx
+    #  exclude: ["Conv_0"]
+    #- onnx: ../experiments/workloads/deeplabv3.onnx
+    #  exclude: ["Conv_0"]
+    #- onnx: ../experiments/workloads/mobile-bert.onnx
+
+    # Edge Workload
+    
+    - onnx: ../experiments/workloads/bert-large.onnx
+    - onnx: ../experiments/workloads/resnet50.onnx
+    - onnx: ../experiments/workloads/resnet34-ssd1200.onnx
+      exclude: ["Conv_219"]
+
+    ## AR/VR Workload
+    #
+    #- onnx: ../experiments/workloads/resnet50.onnx
+    #  exclude: ["Conv_0"]
+    #- onnx: ../experiments/workloads/mobilenetv1-ssd300.onnx    
+    #- onnx: ../experiments/workloads/yolov3.onnx
+    #  exclude: ["Conv_1"]
+    #- onnx: ../experiments/workloads/unet.onnx
+    #  exclude: ["Conv_196", "Conv_0"]
+
+    ## Datacenter Workload
+    #
+    #- onnx: ../experiments/workloads/googlenet.onnx
+    #  exclude: ["Conv_0"]
+    #- onnx: ../experiments/workloads/yolov3.onnx
+    #  exclude: ["Conv_1"]
+    #- onnx: ../experiments/workloads/bert-large.onnx
+    #- onnx: ../experiments/workloads/dlrm.onnx
+    #  exclude: ["Gemm_0"] # shid
+
+    ## Benchmark Workloads
+    #
+    #- benchmark: GoogleNet
+    #- benchmark: ResNet50
+
+search: 
+  layer-mapper:
+    num-generations: 5 # 100
+    population-size: 120
+    immigrant-population-size: 20
+    use-tournament: True
+    random-mutation-prob: 0.4
+    parallel-mutation-prob: 0.2
+    fill-mutation-prob: 0.2
+    update-ert: True
+    stability-window: 5
+    stability-threshold: 0.02
+    random-when-illegal: True
+    buffer-update-granularity: 16
+  global-scheduler:
+    #num-threads: 24
+    num-generations: 10 # 300
+    population-size: 250
+    immigrant-population-size: 25 #50
+    use-tournament: True
+    priority-crossover-prob: 0.103 # 0.051
+    mapping-crossover-prob: 0.047
+    subacc-crossover-prob: 0.045
+    splitting-mutation-prob: 0.039
+    merging-mutation-prob: 0.042
+    priority-mutation-prob: 0.052
+    mapping-mutation-prob: 0.048
+    template-mutation-prob: 0.041
+    assignment-mutation-prob: 0.053
+    position-mutation-prob: 0.027
+    stability-window: 5
+    stability-threshold: 0.02
+    max-per-workload-mappings: 10
+    stop-on-convergence: false
+    xu-priority: true
+    explore-mapping: True
+    negotiate-arch: True
+    random-search: false # put true to run random search instead of moham
+    single-objective: false # put true to run single-obj optimization
+    product-objective: false # put true to run energy*latency*area optimization
+    weights-objective: [1, 1, 0] # [energy, latency, area] objective weights
+
+#accelergy-script-path: ../scripts/fast_accelergy.py
+

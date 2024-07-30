@@ -1,0 +1,79 @@
+architecture:
+  # ============================================================
+  # Architecture Description
+  # ============================================================
+  version: 0.3
+  subtree:
+    - name: system
+      local:
+        - name: DRAM
+          class: DRAM
+          attributes:
+            type: LPDDR4
+            width: 64
+            block-size: 8
+            word-bits: 8
+            read_bandwidth: 17.9
+            write_bandwidth: 17.9
+      subtree:
+        - name: eyeriss
+          attributes:
+            technology: 45nm
+          local:
+            - name: shared_glb
+              class: smartbuffer_SRAM
+              attributes:
+                depth: 16384
+                width: 64
+                #n_banks: 32
+                block-size: 8
+                word-bits: 8
+                read_bandwidth: 16
+                write_bandwidth: 16
+                instances: 1
+            - name: DummyBuffer # for better mapping
+              class: regfile
+              attributes:
+                depth: 8
+                width: 16
+                word-bits: 8
+                block-size: 2
+                meshX: 64
+                instances: 64
+          subtree:
+          - name: PE
+            local:
+              - name: ifmap_spad
+                class: smartbuffer_RF
+                attributes:
+                  depth: 20
+                  width: 16
+                  block-size: 2
+                  word-bits: 8
+                  meshX: 64
+                  instances: 4096
+              - name: weights_spad
+                class: smartbuffer_RF
+                attributes:
+                  depth: 192
+                  width: 16
+                  block-size: 2
+                  word-bits: 8
+                  meshX: 64
+                  instances: 4096
+              - name: psum_spad
+                class: smartbuffer_RF
+                attributes:
+                  depth: 16
+                  width: 16
+                  update_fifo_depth: 2
+                  block-size: 2
+                  word-bits: 8
+                  meshX: 64
+                  instances: 4096
+              - name: mac
+                class: intmac
+                attributes:
+                  datawidth: 16
+                  meshX : 64
+                  instances: 4096
